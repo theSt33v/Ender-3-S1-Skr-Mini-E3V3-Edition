@@ -1,4 +1,6 @@
-NOTE: This firmware is configured for use with the stock screen of the Ender 3 S1. You must rewire the screen before use. See here: https://www.smith3d.com/skr-mini-e3-v2-v3-on-ender-3-v2-ender-3-s1-lcd-dwin-knob-screen/
+#NOTE:
+
+This firmware is configured for use with the stock screen of the Ender 3 S1. You must rewire the screen before use. See here: https://www.smith3d.com/skr-mini-e3-v2-v3-on-ender-3-v2-ender-3-s1-lcd-dwin-knob-screen/
 
 # Marlin 3D Printer Firmware
 
