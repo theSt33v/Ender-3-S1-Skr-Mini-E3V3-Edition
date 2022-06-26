@@ -9,7 +9,7 @@ This guide covers the installation of the BigTreeTech SKR Mini E3 V3.0 into the 
 #### Why would anyone want to do this?
 I started this project because I was bored and because I have a compulsive need to take 3D printers apart. There are, however, a few advantages:
 
-1: Ender 3 S1 motherboards powered by the STM32F401 have only 256K of flash memory (compared to 512K in the STM32F103-powered variants). This means that there is not enough space for fully-featured Marlin firmware, and useful features like universal bed leveling (UBL) must be compromised. The SKR Mini E3 V3.0 is powered by STM32G0B0 or STM32G0B1 chips, and both have 512K of flash.
+1: Ender 3 S1 motherboards powered by the STM32F401 chip have only 256K of flash memory (compared to 512K in the STM32F103-powered variants). This means that there is not enough space for fully-featured Marlin firmware, and useful features like universal bed leveling (UBL) must be compromised. The SKR Mini E3 V3.0 is powered by STM32G0B0 or STM32G0B1 chips, and both have 512K of flash.
  
 2: The SKR Mini supports Neopixel RGB LEDs, so if you want your setup to have that gamer aesthetic, you can do that, although you may need an additional cheap add-on board to do that depending on how many lights you're sporting. This guide does not cover the addition of these lights, but if you have the official Creality light bar for the S1, this guide will cover its installation.
 
