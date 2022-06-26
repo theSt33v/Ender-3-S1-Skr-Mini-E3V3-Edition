@@ -127,7 +127,7 @@ Assemble the cable per the following diagram. Wires labeled NC are not used. The
 
 12. Screw the the SKR mini into the printer using whichever mount point you want. I chose the one that makes the SD card slot and USB port flush with the front of the printer.
 
-13. Use zip ties to clean up your cable situation. Make sure there's enough room for the motherboard fan to rest above the SKR mini when the bottom is put back on.
+13. Use zip ties to clean up your cable situation. Make sure there's enough room for the motherboard fan to rest below the SKR mini when the bottom is put back on.
 
 14. Place the firmware.bin file included on this GitHub page onto the root of a micro SD card formatted in FAT32.
 
