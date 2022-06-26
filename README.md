@@ -135,3 +135,16 @@ Assemble the cable per the following diagram. Wires labeled NC are not used. The
 
 16. Put the micro SD card into the board and fire it up! If you did everything right, you should be good to go.
 
+## Troubleshooting
+
+# Nothing happens when I turn on the board
+
+Check the connection from the power supply to the board. If you messed up the polarity (red wire left, black wire right), you probably blew the yellow 20 amp fuse that's on the board. Luckily, this is an easy and cheap replacement. These fuses can be found at any hardware or auto parts store. Don't ask me how I know.
+
+# The filament runout sensor isn't working
+
+If the filament runout sensor is wired correctly, it should blink briefly when powered on, show no light when empty and show a solid blue light when full. If the sensor never lights up, or if the light is permanently on, you have wired it incorrectly.
+
+# [Printer component] isn't working
+
+If you're using homemade cables, check the connections. It's a good idea to test the continuity of every wire on every cable you make with a multimeter. Make sure that the xh crimps are seated correctly and that they don't get pushed out when plugged into the board.
