@@ -29,7 +29,7 @@ The SD card and USB port cutouts in the faceplate do not align with the SKR Mini
 
 #### What firmware is compatible with this board?
 
-I used mriscoc Professional Firmware, and I've made this code and build available, but any firmware compatible with the S1 (including Klipper) should work with minimal porting.
+I used mriscoc Professional Firmware, and I've made this code and build available, but any firmware compatible with the SKR Mini E3 V3.0 (including Klipper) should work with minimal porting. Just forward my config and advanced config files to your favorite firmware maintainer and say pretty please.
 
 https://github.com/mriscoc/Ender3V2S1
 
