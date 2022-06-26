@@ -139,7 +139,7 @@ Assemble the cable per the following diagram. Wires labeled NC are not used. The
 
 # Nothing happens when I turn on the board
 
-Check the connection from the power supply to the board. If you messed up the polarity (red wire left, black wire right), you probably blew the yellow 20 amp fuse that's on the board. Luckily, this is an easy and cheap replacement. These fuses can be found at any hardware or auto parts store. Don't ask me how I know.
+Check the connection from the power supply to the board. If you messed up the polarity (it should be red wire left, black wire right), you probably blew the yellow 20 amp fuse that's on the board. Luckily, this is an easy and cheap replacement. These fuses can be found at any hardware or auto parts store. Don't ask me how I know.
 
 # The filament runout sensor isn't working
 
