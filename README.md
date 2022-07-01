@@ -42,7 +42,7 @@ To do this, you will need the following:
 
 2. 4 x stepper motor cables. I used these: https://www.amazon.com/dp/B09JVKTQW1
 
-3. 2 x limit switch cables. For the x limit switch, I would recommend no shorter than 50 cm. I made my own limit switch cables but something like this would work fine: https://www.amazon.com/SQXBK-Printer-Switch-Accessory-Endstop/dp/B09B1WCBMP/ref=sr_1_1_sspa. To be clear, you don't need new limit switches, just the cables. I couldn't find a cable-only listing.
+3. 2 x limit switch cables. For the x limit switch, I would recommend no shorter than 50 cm. I made my own limit switch cables but something like this would work fine: https://www.amazon.com/SQXBK-Printer-Switch-Accessory-Endstop/dp/B09B1WCBMP/ref=sr_1_1_sspa.
 
 4. Zip ties for cable management
 
