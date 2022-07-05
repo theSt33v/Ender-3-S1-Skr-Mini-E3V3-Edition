@@ -52,7 +52,7 @@ To do this, you will need the following:
 6. Filament sensor cable.
 This one is a little tricky. The stock cable connects to the sensor with a 3 pin xh 2.54 connector and to the expansion board in the printer with a 3 pin ph 2.0 connector. We will be removing the expansion board and connecting to the SKR mini directly using an xh 2.54 connector, so you have two options: find a cable with a pH 2.0 3 pin plug and a 3 pin xh 2.54 connector that is long enough to reach the SKR from where the expansion board is, or get a really long cable that has 3 pin xh 2.54 connectors on both sides and go straight from the sensor to the board. I can't find any examples of either cable available for sale, so you'll have to do some hunting if you don't want to make your own.
 
-7. Official Creality LED bar extension cable
+7. Official Creality LED bar extension cable.
 This is another tricky one. The LED bar plugs into the expansion board with a 3 pin xh 2.54 connector (although only 2 pins are used). We need to extend the cable down to the power supply so we can connect it directly. Something like this will work with some minor modification that I'll cover later, but you might need to link both of them together to get enough length: https://www.amazon.com/RuiLing-Connector-Extended-Quadcopter-Rechargeable/dp/B07K452L5Y
 
 8. Sprite Extruder Breakout Cable
