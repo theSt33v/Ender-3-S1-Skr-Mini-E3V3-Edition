@@ -1,1 +1,0 @@
-More configuration files at: https://github.com/mriscoc/Special_Configurations
