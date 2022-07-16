@@ -45,17 +45,19 @@ To do this, you will need the following:
 
 3. 2 x limit switch cables. For the x limit switch, I would recommend no shorter than 50 cm. I made my own limit switch cables but something like this would work fine: https://www.amazon.com/SQXBK-Printer-Switch-Accessory-Endstop/dp/B09B1WCBMP/ref=sr_1_1_sspa.
 
-4. Zip ties for cable management
+4. 1 x extension cable for bed thermistor. https://www.amazon.com/REIFENG-Printer-Cooling-Extension-Connection/dp/B09BN5X6ZT/ref=sr_1_12
 
-5. Jumper wires. This is the easiest way to rewire the DACAI (stock S1) screen for use with the SKR mini. More elegant solutions can be found with some Googling, but this is what I used: https://amazon.com/gp/product/B07GD2BWPY
+5. Zip ties for cable management
 
-6. Filament sensor cable.
+6. Jumper wires. This is the easiest way to rewire the DACAI (stock S1) screen for use with the SKR mini. More elegant solutions can be found with some Googling, but this is what I used: https://amazon.com/gp/product/B07GD2BWPY
+
+7. Filament sensor cable.
 This one is a little tricky. The stock cable connects to the sensor with a 3 pin xh 2.54 connector and to the expansion board in the printer with a 3 pin ph 2.0 connector. We will be removing the expansion board and connecting to the SKR mini directly using an xh 2.54 connector, so you have two options: find a cable with a pH 2.0 3 pin plug and a 3 pin xh 2.54 connector that is long enough to reach the SKR from where the expansion board is, or get a really long cable that has 3 pin xh 2.54 connectors on both sides and go straight from the sensor to the board. I can't find any examples of either cable available for sale, so you'll have to do some hunting if you don't want to make your own.
 
-7. Official Creality LED bar extension cable.
+8. Official Creality LED bar extension cable.
 This is another tricky one. The LED bar plugs into the expansion board with a 3 pin xh 2.54 connector (although only 2 pins are used). We need to extend the cable down to the power supply so we can connect it directly. Something like this will work with some minor modification that I'll cover later, but you might need to link both of them together to get enough length: https://www.amazon.com/RuiLing-Connector-Extended-Quadcopter-Rechargeable/dp/B07K452L5Y
 
-8. Sprite Extruder Breakout Cable
+9. Sprite Extruder Breakout Cable
 
 This part is the trickiest one to source. As far as I know, the only way to get this cable is to buy the Sprite Extruder Pro full upgrade kit (https://www.3djake.com/creality-3d-printers-spare-parts/sprite-extruder-pro-upgrade-kit). It's not cheap and it can be hard to get, but it might be a good option if you were planning on getting a Sprite Pro anyway. Barring that, you'll have to make your own. If you want to make your own, you'll need the following:
 
@@ -112,10 +114,9 @@ Assemble the cable per the following diagram. Wires labeled NC are not used. The
 
 ![filament sensor diagram](https://user-images.githubusercontent.com/21251502/175834935-5977a9e7-3129-4e54-9695-f66fa25f39d8.png)
 
-10. Connect all cables to the SKR mini per the following table:
+10. Connect all cables to the SKR mini per the following table (plug the bed thermistor cable into the jst-xh extension cable to ensure it has enough length):
 
 ![wiring diagram](https://user-images.githubusercontent.com/21251502/175834947-6702b760-99b9-4b7f-9450-cad1b066bfbb.png)
-
 
 11. The following screen instructions are assuming you've plugged the screen in like so:
 
