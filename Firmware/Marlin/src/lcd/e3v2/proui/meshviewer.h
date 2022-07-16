@@ -20,9 +20,6 @@
  */
 #pragma once
 
-#include "../../../core/types.h"
-#include "../../../feature/bedlevel/bedlevel.h"
-
 class MeshViewerClass {
 public:
   float max, min;

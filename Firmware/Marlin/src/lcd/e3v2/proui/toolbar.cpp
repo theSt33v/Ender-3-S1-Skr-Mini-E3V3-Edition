@@ -1,8 +1,8 @@
 /**
  * ToolBar for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * version: 1.1.1
- * Date: 2022/04/09
+ * version: 1.2.1
+ * Date: 2022/07/10
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,8 +40,8 @@ void onDrawTBItem(MenuItemClass* menuitem, int8_t line) {
   DWINUI::Draw_Icon(menuitem->icon, xp, B_YPos);
 };
 
-void Draw_ToolBar() {
-  if (CurrentMenu != &ToolBar) {
+void Draw_ToolBar(bool force /*=false*/) {
+  if (force || (CurrentMenu != &ToolBar)) {
     CurrentMenu = &ToolBar;
     MenuItemsPrepare(TBMaxOpt);
     LOOP_L_N(i,TBMaxOpt) {

@@ -1,8 +1,8 @@
 /**
  * ToolBar for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * version: 1.1.1
- * Date: 2022/04/09
+ * version: 1.2.1
+ * Date: 2022/07/10
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
+
 #include "dwinui.h"
 #include "menus.h"
 
@@ -31,7 +32,6 @@
 #define B_YPos (TBYPos + 5)
 #define B_XPos 24
 #define TBMaxCaptionWidth 18
-#define TBOptCount 12
 
 typedef struct {
   uint8_t icon = 0;
@@ -51,5 +51,5 @@ extern ToolBarClass ToolBar;
 void onDrawTBItem(MenuItemClass* menuitem, int8_t line);
 void UpdateTBSetupItem(MenuItemClass* menuitem, uint8_t val);
 void DrawTBSetupItem(bool focused, uint8_t line);
-void Draw_ToolBar();
+void Draw_ToolBar(bool force = false);
 

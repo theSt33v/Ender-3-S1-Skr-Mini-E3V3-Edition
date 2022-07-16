@@ -1,8 +1,8 @@
 /**
  * DWIN Single var plot
  * Author: Miguel A. Risco-Castillo
- * Version: 1.0
- * Date: 2022/01/30
+ * Version: 2.0
+ * Date: 2022/01/31
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * For commercial applications additional licences can be requested
+ * For commercial applications additional licenses can be requested
  */
 #pragma once
 

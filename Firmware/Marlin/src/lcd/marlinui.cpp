@@ -138,12 +138,12 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
   preheat_t MarlinUI::material_preset[PREHEAT_COUNT];  // Initialized by settings.load()
 
-  PGM_P MarlinUI::get_preheat_label(const uint8_t m) {
+  FSTR_P MarlinUI::get_preheat_label(const uint8_t m) {
     #define _PDEF(N) static PGMSTR(preheat_##N##_label, PREHEAT_##N##_LABEL);
     #define _PLBL(N) preheat_##N##_label,
     REPEAT_1(PREHEAT_COUNT, _PDEF);
     static PGM_P const preheat_labels[PREHEAT_COUNT] PROGMEM = { REPEAT_1(PREHEAT_COUNT, _PLBL) };
-    return (PGM_P)pgm_read_ptr(&preheat_labels[m]);
+    return FPSTR((PGM_P)pgm_read_ptr(&preheat_labels[m]));
   }
 
   void MarlinUI::apply_preheat(const uint8_t m, const uint8_t pmask, const uint8_t e/*=active_extruder*/) {
@@ -414,26 +414,27 @@ void MarlinUI::init() {
           SETCURSOR(0, row);              // Simulate carriage return
         };
 
-        uint8_t *p = (uint8_t*)string;
-        wchar_t ch;
+        const uint8_t *p = (uint8_t*)string;
+        lchar_t wc;
         if (wordwrap) {
-          uint8_t *wrd = nullptr, c = 0;
+          const uint8_t *wrd = nullptr;
+          uint8_t c = 0;
           // find the end of the part
           for (;;) {
             if (!wrd) wrd = p;            // Get word start /before/ advancing
-            p = get_utf8_value_cb(p, cb_read_byte, &ch);
-            const bool eol = !ch;         // zero ends the string
+            p = get_utf8_value_cb(p, cb_read_byte, wc);
+            const bool eol = !wc;         // zero ends the string
             // End or a break between phrases?
-            if (eol || ch == ' ' || ch == '-' || ch == '+' || ch == '.') {
-              if (!c && ch == ' ') { if (wrd) wrd++; continue; } // collapse extra spaces
+            if (eol || wc == ' ' || wc == '-' || wc == '+' || wc == '.') {
+              if (!c && wc == ' ') { if (wrd) wrd++; continue; } // collapse extra spaces
               // Past the right and the word is not too long?
               if (col + c > LCD_WIDTH && col >= (LCD_WIDTH) / 4) _newline(); // should it wrap?
               c += !eol;                  // +1 so the space will be printed
               col += c;                   // advance col to new position
               while (c) {                 // character countdown
                 --c;                      // count down to zero
-                wrd = get_utf8_value_cb(wrd, cb_read_byte, &ch); // get characters again
-                lcd_put_wchar(ch);        // character to the LCD
+                wrd = get_utf8_value_cb(wrd, cb_read_byte, wc); // get characters again
+                lcd_put_lchar(wc);        // character to the LCD
               }
               if (eol) break;             // all done!
               wrd = nullptr;              // set up for next word
@@ -443,29 +444,29 @@ void MarlinUI::init() {
         }
         else {
           for (;;) {
-            p = get_utf8_value_cb(p, cb_read_byte, &ch);
-            if (!ch) break;
-            lcd_put_wchar(ch);
+            p = get_utf8_value_cb(p, cb_read_byte, wc);
+            if (!wc) break;
+            lcd_put_lchar(wc);
             col++;
             if (col >= LCD_WIDTH) _newline();
           }
         }
       }
 
-      void MarlinUI::draw_select_screen_prompt(PGM_P const pref, const char * const string/*=nullptr*/, PGM_P const suff/*=nullptr*/) {
-        const uint8_t plen = utf8_strlen_P(pref), slen = suff ? utf8_strlen_P(suff) : 0;
+      void MarlinUI::draw_select_screen_prompt(FSTR_P const pref, const char * const string/*=nullptr*/, FSTR_P const suff/*=nullptr*/) {
+        const uint8_t plen = utf8_strlen(pref), slen = suff ? utf8_strlen(suff) : 0;
         uint8_t col = 0, row = 0;
         if (!string && plen + slen <= LCD_WIDTH) {
           col = (LCD_WIDTH - plen - slen) / 2;
           row = LCD_HEIGHT > 3 ? 1 : 0;
         }
-          if (LCD_HEIGHT >= 8) row = LCD_HEIGHT / 2 - 2;
-        wrap_string_P(col, row, pref, true);
+        if (LCD_HEIGHT >= 8) row = LCD_HEIGHT / 2 - 2;
+        wrap_string_P(col, row, FTOP(pref), true);
         if (string) {
           if (col) { col = 0; row++; } // Move to the start of the next line
           wrap_string(col, row, string);
         }
-        if (suff) wrap_string_P(col, row, suff);
+        if (suff) wrap_string_P(col, row, FTOP(suff));
       }
 
     #endif // !HAS_GRAPHICAL_TFT
@@ -482,17 +483,14 @@ void MarlinUI::init() {
 
     #if HAS_MARLINUI_MENU && !HAS_ADC_BUTTONS
 
-      void lcd_move_x();
-      void lcd_move_y();
-      void lcd_move_z();
-
       void _reprapworld_keypad_move(const AxisEnum axis, const int16_t dir) {
         ui.manual_move.menu_scale = REPRAPWORLD_KEYPAD_MOVE_STEP;
         ui.encoderPosition = dir;
         switch (axis) {
-          case X_AXIS: lcd_move_x(); break;
-          case Y_AXIS: lcd_move_y(); break;
-          case Z_AXIS: lcd_move_z();
+          case X_AXIS:
+          TERN_(HAS_Y_AXIS, case Y_AXIS:)
+          TERN_(HAS_Z_AXIS, case Z_AXIS:)
+            lcd_move_axis(axis);
           default: break;
         }
       }
@@ -763,6 +761,7 @@ void MarlinUI::init() {
 
     millis_t ManualMove::start_time = 0;
     float ManualMove::menu_scale = 1;
+    screenFunc_t ManualMove::screen_ptr;
     #if IS_KINEMATIC
       float ManualMove::offset = 0;
       xyze_pos_t ManualMove::all_axes_destination = { 0 };
@@ -772,6 +771,9 @@ void MarlinUI::init() {
       int8_t ManualMove::e_index = 0;
     #endif
     AxisEnum ManualMove::axis = NO_AXIS_ENUM;
+    #if ENABLED(MANUAL_E_MOVES_RELATIVE)
+      float ManualMove::e_origin = 0;
+    #endif
 
     /**
      * If a manual move has been posted and its time has arrived, and if the planner
@@ -788,9 +790,6 @@ void MarlinUI::init() {
      * For kinematic machines:
      *   - Set manual_move.offset to modify one axis and post the move.
      *     This is used to achieve more rapid stepping on kinematic machines.
-     *
-     * Currently used by the _lcd_move_xyz function in menu_motion.cpp
-       * and the ubl_map_move_to_xy function in menu_ubl.cpp.
      */
     void ManualMove::task() {
 
@@ -861,7 +860,7 @@ void MarlinUI::init() {
 
       void MarlinUI::external_encoder() {
         if (external_control && encoderDiff) {
-          bedlevel.encoder_diff += encoderDiff;  // Encoder for UBL G29 mesh editing
+          bedlevel.encoder_diff += encoderDiff; // Encoder for UBL G29 mesh editing
           encoderDiff = 0;                  // Hide encoder events from the screen handler
           refresh(LCDVIEW_REDRAW_NOW);      // ...but keep the refresh.
         }
@@ -1648,7 +1647,7 @@ void MarlinUI::init() {
 
   void MarlinUI::pause_print() {
     #if HAS_MARLINUI_MENU
-      synchronize(GET_TEXT(MSG_PAUSING));
+      synchronize(GET_TEXT_F(MSG_PAUSING));
       defer_status_screen();
     #endif
 
@@ -1752,7 +1751,7 @@ void MarlinUI::init() {
       if (old_status < 2) {
         #if ENABLED(EXTENSIBLE_UI)
           ExtUI::onMediaRemoved();
-        #elif PIN_EXISTS(SD_DETECT)
+        #elif HAS_SD_DETECT
           LCD_MESSAGE(MSG_MEDIA_REMOVED);
           #if HAS_MARLINUI_MENU
             if (!defer_return_to_status) return_to_status();
@@ -1852,12 +1851,12 @@ void MarlinUI::init() {
 
   #if DISABLED(EEPROM_AUTO_INIT)
 
-    static inline PGM_P eeprom_err(const uint8_t msgid) {
+    static inline FSTR_P eeprom_err(const uint8_t msgid) {
       switch (msgid) {
         default:
-        case 0: return GET_TEXT(MSG_ERR_EEPROM_CRC);
-        case 1: return GET_TEXT(MSG_ERR_EEPROM_INDEX);
-        case 2: return GET_TEXT(MSG_ERR_EEPROM_VERSION);
+        case 0: return GET_TEXT_F(MSG_ERR_EEPROM_CRC);
+        case 1: return GET_TEXT_F(MSG_ERR_EEPROM_INDEX);
+        case 2: return GET_TEXT_F(MSG_ERR_EEPROM_VERSION);
       }
     }
 
@@ -1865,17 +1864,17 @@ void MarlinUI::init() {
       #if HAS_MARLINUI_MENU
         editable.uint8 = msgid;
         goto_screen([]{
-          PGM_P const restore_msg = GET_TEXT(MSG_INIT_EEPROM);
-          char msg[utf8_strlen_P(restore_msg) + 1];
-          strcpy_P(msg, restore_msg);
+          FSTR_P const restore_msg = GET_TEXT_F(MSG_INIT_EEPROM);
+          char msg[utf8_strlen(restore_msg) + 1];
+          strcpy_P(msg, FTOP(restore_msg));
           MenuItem_confirm::select_screen(
-            GET_TEXT(MSG_BUTTON_RESET), GET_TEXT(MSG_BUTTON_IGNORE),
+            GET_TEXT_F(MSG_BUTTON_RESET), GET_TEXT_F(MSG_BUTTON_IGNORE),
             init_eeprom, return_to_status,
-            eeprom_err(editable.uint8), msg, PSTR("?")
+            eeprom_err(editable.uint8), msg, F("?")
           );
         });
       #else
-        set_status(FPSTR(eeprom_err(msgid)));
+        set_status(eeprom_err(msgid));
       #endif
     }
 

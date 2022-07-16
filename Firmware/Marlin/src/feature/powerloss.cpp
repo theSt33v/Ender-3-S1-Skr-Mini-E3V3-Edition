@@ -44,10 +44,6 @@ uint32_t PrintJobRecovery::cmd_sdpos, // = 0
   bool PrintJobRecovery::dwin_flag; // = false
 #endif
 
-#if ProUIex
-  #include "../lcd/e3v2/proui/proui.h"
-#endif
-
 #include "../sd/cardreader.h"
 #include "../lcd/marlinui.h"
 #include "../gcode/queue.h"

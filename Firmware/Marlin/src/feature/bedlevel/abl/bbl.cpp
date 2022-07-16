@@ -35,10 +35,6 @@
   #include "../../../lcd/extui/ui_api.h"
 #endif
 
-#if ProUIex
-  #include "../../../lcd/e3v2/proui/proui.h"
-#endif
-
 LevelingBilinear bedlevel;
 
 xy_pos_t LevelingBilinear::grid_spacing,
@@ -176,12 +172,7 @@ void LevelingBilinear::print_leveling_grid(const bed_mesh_t* _z_values /*= NULL*
 
   #define ABL_TEMP_POINTS_X (GRID_MAX_POINTS_X + 2)
   #define ABL_TEMP_POINTS_Y (GRID_MAX_POINTS_Y + 2)
-  #if ProUIex
-    #define ABL_GRID_POINTS_VIRT_N (GRID_LIMIT - 1) * (BILINEAR_SUBDIVISIONS) + 1
-    float LevelingBilinear::z_values_virt[ABL_GRID_POINTS_VIRT_N][ABL_GRID_POINTS_VIRT_N];
-  #else
-    float LevelingBilinear::z_values_virt[ABL_GRID_POINTS_VIRT_X][ABL_GRID_POINTS_VIRT_Y];
-  #endif
+  float LevelingBilinear::z_values_virt[ABL_GRID_POINTS_VIRT_X][ABL_GRID_POINTS_VIRT_Y];
   xy_pos_t LevelingBilinear::grid_spacing_virt;
   xy_float_t LevelingBilinear::grid_factor_virt;
 

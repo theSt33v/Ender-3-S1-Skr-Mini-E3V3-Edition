@@ -20,8 +20,8 @@
  */
 #pragma once
 
-#include "dwinui.h"
 #include "dwin.h"
+#include "dwinui.h"
 
 extern void (*Draw_Popup)();
 

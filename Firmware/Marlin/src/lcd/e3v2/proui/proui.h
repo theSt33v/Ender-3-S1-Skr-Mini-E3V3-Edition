@@ -1,8 +1,8 @@
 /**
  * Professional Firmware UI extensions
  * Author: Miguel A. Risco-Castillo
- * Version: 1.2.0
- * Date: 2022/04/09
+ * Version: 1.3.0
+ * Date: 2022/06/17
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * For commercial applications additional licences can be requested
+ * For commercial applications additional licenses can be requested
  */
 #pragma once
 
@@ -42,30 +42,47 @@ constexpr int16_t DEF_Z_MAX_POS = Z_MAX_POS;
 constexpr bool DEF_INVERT_E0_DIR = INVERT_E0_DIR;
 
 #define DEF_NOZZLE_PARK_POINT {240, 220, 20}
+
 #if HAS_MESH
+
   constexpr int8_t DEF_GRID_MAX_POINTS = GRID_MAX_POINTS_X;
   #define GRID_MIN 3
   #define GRID_LIMIT 9
+
+  #ifndef MESH_INSET
+    #define MESH_INSET 25
+  #endif
+  #ifndef MESH_MIN_X
+    #define MESH_MIN_X MESH_INSET
+  #endif
+  #ifndef MESH_MIN_Y
+    #define MESH_MIN_Y MESH_INSET
+  #endif
+  #ifndef MESH_MAX_X
+    #define MESH_MAX_X  X_BED_SIZE - (MESH_INSET)
+  #endif
+  #ifndef MESH_MAX_Y
+    #define MESH_MAX_Y  X_BED_SIZE - (MESH_INSET)
+  #endif
+  constexpr int16_t DEF_MESH_MIN_X = MESH_MIN_X;
+  constexpr int16_t DEF_MESH_MAX_X = MESH_MAX_X;
+  constexpr int16_t DEF_MESH_MIN_Y = MESH_MIN_Y;
+  constexpr int16_t DEF_MESH_MAX_Y = MESH_MAX_Y;
+  #define MIN_MESH_INSET 5
+  #define MAX_MESH_INSET X_BED_SIZE
+
 #endif
 
 #if HAS_BED_PROBE
-  #if !EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
-    // Override the mesh area if the automatic (max) area is too large
-    #define MESH_INSET 25
-    #define MESH_MIN_X MESH_INSET
-    #define MESH_MIN_Y MESH_INSET
-    #define MESH_MAX_X X_BED_SIZE - (MESH_INSET)
-    #define MESH_MAX_Y Y_BED_SIZE - (MESH_INSET)
-  #endif
+  constexpr int16_t DEF_PROBING_MARGIN = PROBING_MARGIN;
+  #define MIN_PROBE_MARGIN 5
+  #define MAX_PROBE_MARGIN 60
   constexpr int16_t DEF_Z_PROBE_FEEDRATE_SLOW = (Z_PROBE_FEEDRATE_FAST / 2);
+  #ifndef MULTIPLE_PROBING
+    #define MULTIPLE_PROBING 0
+  #endif
 #endif
 
-constexpr int16_t DEF_MESH_MIN_X = MESH_MIN_X;
-constexpr int16_t DEF_MESH_MAX_X = MESH_MAX_X;
-constexpr int16_t DEF_MESH_MIN_Y = MESH_MIN_Y;
-constexpr int16_t DEF_MESH_MAX_Y = MESH_MAX_Y;
-#define MIN_MESH_INSET 5
-#define MAX_MESH_INSET X_BED_SIZE
 #define DEF_FIL_MOTION_SENSOR false
 
 typedef struct {
@@ -89,12 +106,12 @@ typedef struct {
   #endif
   #if HAS_BED_PROBE
     uint16_t zprobefeedslow = DEF_Z_PROBE_FEEDRATE_SLOW;
+    uint8_t multiple_probing = MULTIPLE_PROBING;
   #endif
   bool Invert_E0 = DEF_INVERT_E0_DIR;
   bool FilamentMotionSensor = DEF_FIL_MOTION_SENSOR;
   #if HAS_TOOLBAR
-    #define TBMaxOpt 5
-    uint8_t TBopt[TBMaxOpt] = {0, 1, 2, 3, 4};
+    uint8_t TBopt[TBMaxOpt] = DEF_TBOPT;
   #endif
   celsius_t hotend_maxtemp = HEATER_0_MAXTEMP;
 } PRO_data_t;
@@ -144,6 +161,10 @@ public:
 #if HAS_BED_PROBE
   static void C851();
   static void C851_report(const bool forReplay=true);
+#endif
+#if HAS_TOOLBAR
+  static void C810();
+  static void C810_report(const bool forReplay=true);
 #endif
   static void UpdateAxis(const AxisEnum axis);
   static void ApplyPhySet();

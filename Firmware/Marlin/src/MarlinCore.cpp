@@ -421,37 +421,38 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
     kill();
   }
 
+  const bool has_blocks = planner.has_blocks_queued();  // Any moves in the planner?
+  if (has_blocks) gcode.reset_stepper_timeout(ms);      // Reset timeout for M18/M84, M85 max 'kill', and laser.
+
   // M18 / M84 : Handle steppers inactive time timeout
-  if (gcode.stepper_inactive_time) {
+  #if HAS_DISABLE_INACTIVE_AXIS
+    if (gcode.stepper_inactive_time) {
 
-    static bool already_shutdown_steppers; // = false
+      static bool already_shutdown_steppers; // = false
 
-    // Any moves in the planner? Resets both the M18/M84
-    // activity timeout and the M85 max 'kill' timeout
-    if (planner.has_blocks_queued())
-      gcode.reset_stepper_timeout(ms);
-    else if (!do_reset_timeout && gcode.stepper_inactive_timeout()) {
-      if (!already_shutdown_steppers) {
-        already_shutdown_steppers = true;  // L6470 SPI will consume 99% of free time without this
+      if (!has_blocks && !do_reset_timeout && gcode.stepper_inactive_timeout()) {
+        if (!already_shutdown_steppers) {
+          already_shutdown_steppers = true;  // L6470 SPI will consume 99% of free time without this
 
-        // Individual axes will be disabled if configured
-        TERN_(DISABLE_INACTIVE_X, stepper.disable_axis(X_AXIS));
-        TERN_(DISABLE_INACTIVE_Y, stepper.disable_axis(Y_AXIS));
-        TERN_(DISABLE_INACTIVE_Z, stepper.disable_axis(Z_AXIS));
-        TERN_(DISABLE_INACTIVE_I, stepper.disable_axis(I_AXIS));
-        TERN_(DISABLE_INACTIVE_J, stepper.disable_axis(J_AXIS));
-        TERN_(DISABLE_INACTIVE_K, stepper.disable_axis(K_AXIS));
-        TERN_(DISABLE_INACTIVE_U, stepper.disable_axis(U_AXIS));
-        TERN_(DISABLE_INACTIVE_V, stepper.disable_axis(V_AXIS));
-        TERN_(DISABLE_INACTIVE_W, stepper.disable_axis(W_AXIS));
-        TERN_(DISABLE_INACTIVE_E, stepper.disable_e_steppers());
+          // Individual axes will be disabled if configured
+          TERN_(DISABLE_INACTIVE_X, stepper.disable_axis(X_AXIS));
+          TERN_(DISABLE_INACTIVE_Y, stepper.disable_axis(Y_AXIS));
+          TERN_(DISABLE_INACTIVE_Z, stepper.disable_axis(Z_AXIS));
+          TERN_(DISABLE_INACTIVE_I, stepper.disable_axis(I_AXIS));
+          TERN_(DISABLE_INACTIVE_J, stepper.disable_axis(J_AXIS));
+          TERN_(DISABLE_INACTIVE_K, stepper.disable_axis(K_AXIS));
+          TERN_(DISABLE_INACTIVE_U, stepper.disable_axis(U_AXIS));
+          TERN_(DISABLE_INACTIVE_V, stepper.disable_axis(V_AXIS));
+          TERN_(DISABLE_INACTIVE_W, stepper.disable_axis(W_AXIS));
+          TERN_(DISABLE_INACTIVE_E, stepper.disable_e_steppers());
 
-        TERN_(AUTO_BED_LEVELING_UBL, bedlevel.steppers_were_disabled());
+          TERN_(AUTO_BED_LEVELING_UBL, bedlevel.steppers_were_disabled());
+        }
       }
+      else
+        already_shutdown_steppers = false;
     }
-    else
-      already_shutdown_steppers = false;
-  }
+  #endif
 
   #if ENABLED(PHOTO_GCODE) && PIN_EXISTS(CHDK)
     // Check if CHDK should be set to LOW (after M240 set it HIGH)
@@ -773,6 +774,10 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
  *  - Handle Joystick jogging
  */
 void idle(bool no_stepper_sleep/*=false*/) {
+  #ifdef MAX7219_DEBUG_PROFILE
+    CodeProfiler idle_profiler;
+  #endif
+
   #if ENABLED(MARLIN_DEV_MODE)
     static uint16_t idle_depth = 0;
     if (++idle_depth > 5) SERIAL_ECHOLNPGM("idle() call depth: ", idle_depth);
@@ -782,7 +787,7 @@ void idle(bool no_stepper_sleep/*=false*/) {
   manage_inactivity(no_stepper_sleep);
 
   // Manage Heaters (and Watchdog)
-  thermalManager.manage_heater();
+  thermalManager.task();
 
   // Max7219 heartbeat, animation, etc
   TERN_(MAX7219_DEBUG, max7219.idle_tasks());
@@ -932,18 +937,18 @@ void minkill(const bool steppers_off/*=false*/) {
 
     // Wait for both KILL and ENC to be released
     while (TERN0(HAS_KILL, kill_state()) || TERN0(SOFT_RESET_ON_KILL, ui.button_pressed()))
-      watchdog_refresh();
+      hal.watchdog_refresh();
 
     // Wait for either KILL or ENC to be pressed again
     while (TERN1(HAS_KILL, !kill_state()) && TERN1(SOFT_RESET_ON_KILL, !ui.button_pressed()))
-      watchdog_refresh();
+      hal.watchdog_refresh();
 
     // Reboot the board
     hal.reboot();
 
   #else
 
-    for (;;) watchdog_refresh();  // Wait for RESET button or power-cycle
+    for (;;) hal.watchdog_refresh();  // Wait for RESET button or power-cycle
 
   #endif
 }
@@ -1239,6 +1244,17 @@ void setup() {
     SETUP_RUN(tmc_serial_begin());
   #endif
 
+  #if HAS_TMC_SPI
+    #if DISABLED(TMC_USE_SW_SPI)
+      SETUP_RUN(SPI.begin());
+    #endif
+    SETUP_RUN(tmc_init_cs_pins());
+  #endif
+
+  #if HAS_L64XX
+    SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
+  #endif
+
   #if ENABLED(PSU_CONTROL)
     SETUP_LOG("PSU_CONTROL");
     powerManager.init();
@@ -1248,19 +1264,8 @@ void setup() {
     SETUP_RUN(recovery.setup());
   #endif
 
-  #if HAS_L64XX
-    SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
-  #endif
-
   #if HAS_STEPPER_RESET
     SETUP_RUN(disableStepperDrivers());
-  #endif
-
-  #if HAS_TMC_SPI
-    #if DISABLED(TMC_USE_SW_SPI)
-      SETUP_RUN(SPI.begin());
-    #endif
-    SETUP_RUN(tmc_init_cs_pins());
   #endif
 
   SETUP_RUN(hal.init_board());
@@ -1568,7 +1573,7 @@ void setup() {
   #endif
 
   #if ENABLED(USE_WATCHDOG)
-    SETUP_RUN(watchdog_init());       // Reinit watchdog after hal.get_reset_source call
+    SETUP_RUN(hal.watchdog_init());   // Reinit watchdog after hal.get_reset_source call
   #endif
 
   #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)

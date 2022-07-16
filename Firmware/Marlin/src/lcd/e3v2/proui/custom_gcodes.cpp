@@ -26,9 +26,10 @@
 #include "../../../core/types.h"
 #include "../../../gcode/gcode.h"
 #include "../../../libs/buzzer.h"
-#include "dwin_lcd.h"
-#include "dwinui.h"
+
 #include "dwin.h"
+#include "dwinui.h"
+#include "dwin_lcd.h"
 #include "custom_gcodes.h"
 
 //=============================================================================
@@ -62,10 +63,12 @@ void C108() {
 }
 
 // lock/unlock screen
-void C510() {
-  if (parser.seenval('U') && parser.value_int()) DWIN_UnLockScreen();
-  else DWIN_LockScreen();
-}
+#if HAS_LOCKSCREEN
+  void C510() {
+    if (parser.seenval('U') && parser.value_int()) DWIN_UnLockScreen();
+    else DWIN_LockScreen();
+  }
+#endif
 
 #if DEBUG_DWIN
   void C997() {
@@ -86,18 +89,20 @@ void custom_gcode(const int16_t codenum) {
   switch(codenum) {
     case 11: C11(); break;             // Set color for UI element E
     case 108: C108(); break;           // Cancel a Wait for User without an Emergecy Parser
-    case 510: C510(); break;           // lock screen
+    #if HAS_LOCKSCREEN
+      case 510: C510(); break;         // lock screen
+    #endif
     #if DEBUG_DWIN
       case 997: C997(); break;         // Simulate a printer freeze
     #endif
     #if ProUIex
       #if HAS_MESH
-        case 29: ProEx.C29(); break;        // Set amount of grid points of the mesh leveling
+        case 29: ProEx.C29(); break;        // Set probing area and mesh leveling settings
       #endif
       case 100: ProEx.C100(); break;        // Change Physical manimums
       case 101: ProEx.C101(); break;        // Change Physical maximums
       case 102: ProEx.C102(); break;        // Change Bed size
-      case 104: ProEx.C104(); break;        // Set extruder max temperature
+      case 104: ProEx.C104(); break;        // Set extruder max temperature (limited by maxtemp in thermistor table)
       case 115: ProEx.C115(); break;        // ProUI Info
       #if ENABLED(NOZZLE_PARK_FEATURE)
         case 125: ProEx.C125(); break;      // Set park position
@@ -107,7 +112,10 @@ void custom_gcode(const int16_t codenum) {
       #endif
       case 562: ProEx.C562(); break;        // Invert Extruder
       #if HAS_BED_PROBE
-        case 851: ProEx.C851(); break;      // Set mesh inset and z feed rate of the probe mesh leveling
+        case 851: ProEx.C851(); break;      // Set z feed rate of the probe mesh leveling
+      #endif
+      #if HAS_TOOLBAR
+        case 810: ProEx.C810(); break;      // Config toolbar
       #endif
     #endif
     default: CError(); break;
@@ -119,7 +127,7 @@ void custom_gcode_report(const bool forReplay/*=true*/) {
     #if HAS_MESH
       ProEx.C29_report(forReplay);    // Set amount of grid points of the mesh leveling
     #endif
-    ProEx.C100_report(forReplay);     // Change Physical manimums
+    ProEx.C100_report(forReplay);     // Change Physical minimums
     ProEx.C101_report(forReplay);     // Change Physical maximums
     ProEx.C102_report(forReplay);     // Change Bed size
     ProEx.C104_report(forReplay);     // Set extruder max temperature

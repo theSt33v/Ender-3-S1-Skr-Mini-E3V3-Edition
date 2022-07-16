@@ -23,15 +23,11 @@
  */
 
 #include "../../../inc/MarlinConfigPre.h"
-#include "bedlevel_tools.h"
 
-#if ENABLED(DWIN_LCD_PROUI)
+#if BOTH(DWIN_LCD_PROUI, HAS_LEVELING)
 
 #include "../../marlinui.h"
 #include "../../../core/types.h"
-#include "dwin.h"
-#include "dwinui.h"
-#include "dwin_popup.h"
 #include "../../../feature/bedlevel/bedlevel.h"
 #include "../../../module/probe.h"
 #include "../../../gcode/gcode.h"
@@ -39,6 +35,11 @@
 #include "../../../gcode/queue.h"
 #include "../../../libs/least_squares_fit.h"
 #include "../../../libs/vector_3.h"
+
+#include "dwin.h"
+#include "dwinui.h"
+#include "dwin_popup.h"
+#include "bedlevel_tools.h"
 
 BedLevelToolsClass BedLevelTools;
 
@@ -158,7 +159,7 @@ void BedLevelToolsClass::MoveToZ() {
   BedLevelTools.manual_move(BedLevelTools.mesh_x, BedLevelTools.mesh_y, true);
 }
 void BedLevelToolsClass::ProbeXY() {
-  sprintf_P(cmd, PSTR("G30X%sY%s"),
+  sprintf_P(cmd, PSTR("G0Z5\nG30X%sY%s"),
     dtostrf(bedlevel.get_mesh_x(BedLevelTools.mesh_x), 1, 2, str_1),
     dtostrf(bedlevel.get_mesh_y(BedLevelTools.mesh_y), 1, 2, str_2)
   );

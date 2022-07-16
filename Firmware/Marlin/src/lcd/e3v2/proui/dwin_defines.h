@@ -21,24 +21,16 @@
 
 #pragma once
 
-#define ProUIex 1
+// #define ProUIex 1
+// #define HAS_GCODE_PREVIEW 1
+// #define HAS_TOOLBAR 1
+// #define HAS_PIDPLOT 1
+// #define HAS_ESDIAG 1
+// #define HAS_CGCODE 1
+// #define HAS_LOCKSCREEN 1
 
-//#define DEBUG_DWIN 1
-#if ProUIex
-  #define HAS_GCODE_PREVIEW 1
-  #define HAS_TOOLBAR 1
-  #define HAS_PIDPLOT 1
-#endif
-#define HAS_ESDIAG 1
-#define HAS_CGCODE 1
-
-#include "../../../inc/MarlinConfigPre.h"
-#include <stddef.h>
-#include "../../../core/types.h"
-#include "../common/dwin_color.h"
-#if ProUIex
-  #include "proui.h"
-#endif
+// #define DEBUG_DWIN 1
+// #define NEED_HEX_PRINT 1
 
 #if MB(CREALITY_V24S1_301, CREALITY_V24S1_301F4)
   #define DASH_REDRAW 1
@@ -56,24 +48,28 @@
 #if DISABLED(FILAMENT_RUNOUT_SENSOR)
   #warning "FILAMENT_RUNOUT_SENSOR can be enabled with ProUI."
 #endif
-#if DISABLED(INDIVIDUAL_AXIS_HOMING_SUBMENU)
-  #warning "INDIVIDUAL_AXIS_HOMING_SUBMENU can be enabled with ProUI."
+
+#if (!MB(CREALITY_V24S1_301F4) && ENABLED(AUTO_BED_LEVELING_UBL)) // Disabled for S1 F4 RCT6 for free program memory
+  #if DISABLED(INDIVIDUAL_AXIS_HOMING_SUBMENU)
+    #warning "INDIVIDUAL_AXIS_HOMING_SUBMENU can be enabled with ProUI."
+  #endif
+  #if DISABLED(LCD_SET_PROGRESS_MANUALLY)
+    #warning "LCD_SET_PROGRESS_MANUALLY can be enabled with ProUI."
+  #endif
+  #if DISABLED(STATUS_MESSAGE_SCROLLING)
+    #warning "STATUS_MESSAGE_SCROLLING can be enabled with ProUI."
+  #endif
+  #if DISABLED(BAUD_RATE_GCODE)
+    #warning "BAUD_RATE_GCODE can be enabled with ProUI."
+  #endif
+  #if DISABLED(SOUND_MENU_ITEM)
+    #warning "SOUND_MENU_ITEM can be enabled with ProUI."
+  #endif
+  #if DISABLED(PRINTCOUNTER)
+    #warning "PRINTCOUNTER can be enabled with ProUI."
+  #endif
 #endif
-#if DISABLED(LCD_SET_PROGRESS_MANUALLY)
-  #warning "LCD_SET_PROGRESS_MANUALLY can be enabled with ProUI."
-#endif
-#if DISABLED(STATUS_MESSAGE_SCROLLING)
-  #warning "STATUS_MESSAGE_SCROLLING can be enabled with ProUI."
-#endif
-#if DISABLED(BAUD_RATE_GCODE)
-  #warning "BAUD_RATE_GCODE can be enabled with ProUI."
-#endif
-#if DISABLED(SOUND_MENU_ITEM)
-  #warning "SOUND_MENU_ITEM can be enabled with ProUI."
-#endif
-#if DISABLED(PRINTCOUNTER)
-  #warning "PRINTCOUNTER can be enabled with ProUI."
-#endif
+
 #if DISABLED(MESH_EDIT_MENU)
   #warning "MESH_EDIT_MENU can be enabled with ProUI."
 #endif
@@ -106,12 +102,16 @@
 #define Def_Indicator_Color   Color_White
 #define Def_Coordinate_Color  Color_White
 #define Def_Button_Color      RGB( 0, 23, 16)
-#if ENABLED(LED_CONTROL_MENU, HAS_COLOR_LEDS)
+#if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
   #define Def_Leds_Color      0xFFFFFFFF
 #endif
 #if ENABLED(CASELIGHT_USES_BRIGHTNESS)
   #define Def_CaseLight_Brightness 255
 #endif
+
+#include <stddef.h>
+#include "../../../core/types.h"
+#include "../common/dwin_color.h"
 
 typedef struct {
   // Color settings
@@ -158,10 +158,22 @@ typedef struct {
   #endif
 } HMI_data_t;
 
-static constexpr size_t eeprom_data_size = sizeof(HMI_data_t) + sizeof(PRO_data_t);
 extern HMI_data_t HMI_data;
 
 #if ProUIex
+
+  #if HAS_TOOLBAR
+    #define TBOptCount 12                 // Total of assignable functions
+    #define TBMaxOpt 5                    // Amount of shortcuts on screen
+    #if HAS_BED_PROBE
+      #define DEF_TBOPT {0, 1, 2, 3, 4}   // Default shorcuts for ALB/UBL
+    #else
+      #define DEF_TBOPT {0, 1, 4, 5, 6};  // Default shortcuts for MM
+    #endif
+  #endif
+
+  #include "proui.h"
+
   #undef X_BED_SIZE
   #undef Y_BED_SIZE
   #undef X_MIN_POS
@@ -205,4 +217,7 @@ extern HMI_data_t HMI_data;
     #define Z_PROBE_FEEDRATE_SLOW PRO_data.zprobefeedslow
   #endif
   #define INVERT_E0_DIR PRO_data.Invert_E0
+
 #endif  // ProUIex
+
+static constexpr size_t eeprom_data_size = sizeof(HMI_data_t) + TERN0(ProUIex, sizeof(PRO_data_t));

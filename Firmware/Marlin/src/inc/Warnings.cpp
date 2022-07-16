@@ -71,6 +71,10 @@
 
 #ifndef NO_AUTO_ASSIGN_WARNING
 
+  #if AUTO_ASSIGNED_LCD_SERIAL
+    #warning "Note: Auto-assigned LCD_SERIAL_PORT. (Define NO_AUTO_ASSIGN_WARNING to suppress this warning.)"
+  #endif
+
   #if AUTO_ASSIGNED_X2_STEPPER
     #warning "Note: Auto-assigned X2 STEP/DIR/ENABLE_PINs to unused En_STEP/DIR/ENABLE_PINs. (Define NO_AUTO_ASSIGN_WARNING to suppress this warning.)"
   #endif
@@ -719,7 +723,6 @@
 //
 // Warn users of potential endstop/DIAG pin conflicts to prevent homing issues when not using sensorless homing
 //
-#define DIAG_JUMPERS_REMOVED
 #if !USE_SENSORLESS
   #if ENABLED(USES_DIAG_JUMPERS) && DISABLED(DIAG_JUMPERS_REMOVED)
     #warning "Motherboard DIAG jumpers must be removed when SENSORLESS_HOMING is disabled. (Define DIAG_JUMPERS_REMOVED to suppress this warning.)"

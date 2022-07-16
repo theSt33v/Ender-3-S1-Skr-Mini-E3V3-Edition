@@ -34,8 +34,15 @@ private:
   static xy_int8_t cached_g;
 
   #if ENABLED(ABL_BILINEAR_SUBDIVISION)
-    #define ABL_GRID_POINTS_VIRT_X (GRID_MAX_CELLS_X * (BILINEAR_SUBDIVISIONS) + 1)
-    #define ABL_GRID_POINTS_VIRT_Y (GRID_MAX_CELLS_Y * (BILINEAR_SUBDIVISIONS) + 1)
+
+    #if ProUIex
+      #define ABL_GRID_POINTS_VIRT_N (GRID_LIMIT - 1) * (BILINEAR_SUBDIVISIONS) + 1
+      #define ABL_GRID_POINTS_VIRT_X ABL_GRID_POINTS_VIRT_N
+      #define ABL_GRID_POINTS_VIRT_Y ABL_GRID_POINTS_VIRT_N
+    #else
+      #define ABL_GRID_POINTS_VIRT_X (GRID_MAX_CELLS_X * (BILINEAR_SUBDIVISIONS) + 1)
+      #define ABL_GRID_POINTS_VIRT_Y (GRID_MAX_CELLS_Y * (BILINEAR_SUBDIVISIONS) + 1)
+    #endif
 
     static float z_values_virt[ABL_GRID_POINTS_VIRT_X][ABL_GRID_POINTS_VIRT_Y];
     static xy_pos_t grid_spacing_virt;
