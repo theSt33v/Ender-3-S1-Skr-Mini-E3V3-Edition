@@ -139,7 +139,7 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "Ender 3 S1 SKR Mini E3 V3"
+#define CUSTOM_MACHINE_NAME "Ender Dragon"
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -1678,7 +1678,7 @@
 #define Y_MIN_POS -8
 #define Z_MIN_POS 0
 #define X_MAX_POS 230  // MRiscoC Stock physical limit
-#define Y_MAX_POS 230  // MRiscoC Stock physical limit
+#define Y_MAX_POS 220  // MRiscoC Stock physical limit
 #define Z_MAX_POS 270  // Ender Configs
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
@@ -1949,7 +1949,7 @@
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 38              // Set Mesh bounds as an inset region of the bed  // MRiscoC Center mesh
-  #define GRID_MAX_POINTS_X 9      // Don't use more than 15 points per axis, implementation limited.  // MRiscoC Customizable by menu
+  #define GRID_MAX_POINTS_X 5      // Don't use more than 15 points per axis, implementation limited.  // MRiscoC Customizable by menu
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   #define UBL_HILBERT_CURVE       // Use Hilbert distribution for less travel when probing multiple points
@@ -3195,6 +3195,7 @@
 
 // Support for PCA9533 PWM LED driver
 //#define PCA9533
+
 /**
  * RGB LED / LED Strip Control
  *
